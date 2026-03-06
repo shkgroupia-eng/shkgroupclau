@@ -52,8 +52,8 @@ button{font-family:inherit;cursor:none}
 
 .nav-logo{display:flex;align-items:center;gap:10px;cursor:none}
 .nav-logo-text{display:flex;align-items:baseline;font-weight:700;font-size:1.2rem;letter-spacing:-.02em}
-.nav-logo-img{height:28px;width:auto;object-fit:contain;flex-shrink:0;mix-blend-mode:screen;filter:brightness(1.05)}
-.footer-logo-img{height:24px;mix-blend-mode:screen;filter:brightness(1.05)}
+.nav-logo-img{height:28px;width:auto;object-fit:contain;flex-shrink:0}
+.footer-logo-img{height:24px}
 
 .logo-shk{color:#fff}
 .logo-group{color:var(--text2);font-weight:500}
