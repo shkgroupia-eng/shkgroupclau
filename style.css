@@ -52,8 +52,8 @@ button{font-family:inherit;cursor:none}
 
 .nav-logo{display:flex;align-items:center;gap:10px;cursor:none}
 .nav-logo-text{display:flex;align-items:baseline;font-weight:700;font-size:1.2rem;letter-spacing:-.02em}
-.nav-logo-img{height:28px;width:auto;object-fit:contain;flex-shrink:0}
-.footer-logo-img{height:24px}
+.nav-logo-img{height:28px;width:auto;object-fit:contain;flex-shrink:0;mix-blend-mode:screen;filter:brightness(1.05)}
+.footer-logo-img{height:24px;mix-blend-mode:screen;filter:brightness(1.05)}
 
 .logo-shk{color:#fff}
 .logo-group{color:var(--text2);font-weight:500}
@@ -451,6 +451,11 @@ button{font-family:inherit;cursor:none}
 /* ════════════════ REVEAL ════════════════ */
 .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
+
+
+/* ── Nav Mobile Overlay ── */
+.nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8999;backdrop-filter:blur(2px)}
+.nav-overlay.open{display:block}
 
 /* ════════════════ RESPONSIVE ════════════════ */
 @media(max-width:1024px){
