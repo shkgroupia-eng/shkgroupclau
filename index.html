@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.1">
 
   <!-- Meta Pixel Code -->
   <script>
@@ -889,7 +889,7 @@
               <div class="nl-form-sub">Gratuito para sempre • Cancele quando quiser</div>
             </div>
           </div>
-          <form id="newsletterForm">
+          <form id="newsletterForm" onsubmit="event.preventDefault()" action="javascript:void(0)">
             <div class="nl-field-wrap">
               <label class="nl-label" for="nlName">Seu nome <span class="nl-optional">(opcional)</span></label>
               <div class="nl-input-wrap">
@@ -926,7 +926,7 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 Quero receber grátis
               </span>
-              <span class="nl-btn-spinner" id="nlBtnSpinner">
+              <span class="nl-btn-spinner" id="nlBtnSpinner" style="display:none">
                 <svg class="nl-spinner-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="15"/></svg>
                 Inscrevendo...
               </span>
@@ -936,14 +936,14 @@
               Seus dados estão protegidos. Sem spam, nunca.
             </p>
           </form>
-          <div class="nl-error" id="newsletterError">
+          <div class="nl-error" id="newsletterError" style="display:none">
             <div class="nl-error-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
             </div>
             <p class="nl-error-msg" id="nlErrorMsg">Ocorreu um erro. Tente novamente.</p>
             <button type="button" class="nl-retry-btn" id="nlRetryBtn">Tentar novamente</button>
           </div>
-          <div class="nl-success" id="newsletterSuccess">
+          <div class="nl-success" id="newsletterSuccess" style="display:none">
             <div class="nl-success-icon">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path class="nl-check-path" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline class="nl-check-path" points="22 4 12 14.01 9 11.01"/></svg>
             </div>
@@ -959,7 +959,7 @@
         <!-- Unsubscribe -->
         <div class="nl-unsub-wrap" id="nlUnsubWrap">
           <button type="button" class="nl-unsub-toggle" id="nlUnsubToggle">Já é inscrito? Cancelar inscrição</button>
-          <div class="nl-unsub-form" id="nlUnsubForm">
+          <div class="nl-unsub-form" id="nlUnsubForm" style="display:none">
             <p class="nl-unsub-desc">Informe seu e-mail para cancelar a inscrição:</p>
             <div class="nl-input-wrap">
               <span class="nl-input-icon">
@@ -969,7 +969,7 @@
             </div>
             <button type="button" class="nl-unsub-btn" id="nlUnsubBtn">
               <span class="nl-unsub-btn-text" id="nlUnsubBtnText">Cancelar inscrição</span>
-              <span class="nl-unsub-btn-spinner" id="nlUnsubBtnSpinner">
+              <span class="nl-unsub-btn-spinner" id="nlUnsubBtnSpinner" style="display:none">
                 <svg class="nl-spinner-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="15"/></svg>
                 Cancelando...
               </span>
@@ -1390,7 +1390,7 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2.1"></script>
 
 <!-- ==================== EXIT INTENT POPUP ==================== -->
 <div class="exit-overlay" id="exitOverlay"></div>

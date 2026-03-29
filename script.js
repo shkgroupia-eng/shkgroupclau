@@ -263,6 +263,10 @@ if (nlForm) {
     // Loading state
     btn.classList.add('nl-loading');
     btn.disabled = true;
+    const btnText = document.getElementById('nlBtnText');
+    const btnSpinner = document.getElementById('nlBtnSpinner');
+    if (btnText) btnText.style.display = 'none';
+    if (btnSpinner) btnSpinner.style.display = 'flex';
 
     // Meta Pixel — Lead event
     if (typeof fbq !== 'undefined') {
@@ -309,6 +313,8 @@ if (nlForm) {
     } finally {
       btn.classList.remove('nl-loading');
       btn.disabled = false;
+      if (btnText) btnText.style.display = '';
+      if (btnSpinner) btnSpinner.style.display = 'none';
     }
   });
 }
@@ -355,6 +361,10 @@ if (nlUnsubBtn) {
 
     nlUnsubBtn.classList.add('nl-loading');
     nlUnsubBtn.disabled = true;
+    const unsubText = document.getElementById('nlUnsubBtnText');
+    const unsubSpinner = document.getElementById('nlUnsubBtnSpinner');
+    if (unsubText) unsubText.style.display = 'none';
+    if (unsubSpinner) unsubSpinner.style.display = 'flex';
 
     try {
       const res = await fetch(NL_API + '/' + encodeURIComponent(email), {
@@ -378,6 +388,8 @@ if (nlUnsubBtn) {
     } finally {
       nlUnsubBtn.classList.remove('nl-loading');
       nlUnsubBtn.disabled = false;
+      if (unsubText) unsubText.style.display = '';
+      if (unsubSpinner) unsubSpinner.style.display = 'none';
     }
   });
 }
@@ -515,13 +527,11 @@ function rejectCookies() {
   document.getElementById('cookieBanner')?.classList.add('hidden');
 }
 // Show only if not decided
-window.addEventListener('DOMContentLoaded', () => {
-  if (!localStorage.getItem('shk_cookies')) {
-    setTimeout(() => document.getElementById('cookieBanner')?.classList.remove('hidden'), 2000);
-  } else {
-    document.getElementById('cookieBanner')?.classList.add('hidden');
-  }
-});
+if (!localStorage.getItem('shk_cookies')) {
+  setTimeout(() => document.getElementById('cookieBanner')?.classList.remove('hidden'), 2000);
+} else {
+  document.getElementById('cookieBanner')?.classList.add('hidden');
+}
 
 // ══════════════════════════════════════════
 // MOBILE STICKY CTA — hide when hero visible
