@@ -153,24 +153,233 @@ function loadVideo() {
   }
 }
 
-// ═══ NEWSLETTER SUBMIT ═══
-function submitNewsletter(e) {
-  e.preventDefault();
-  const name  = document.getElementById('nlName') ? document.getElementById('nlName').value : '';
-  const email = document.getElementById('newsletterEmail').value;
-  const form  = document.getElementById('newsletterForm');
-  const success = document.getElementById('newsletterSuccess');
-  if (email && form && success) {
-    // Animate button
-    const btn = form.querySelector('.nl-submit-btn');
-    if(btn){ btn.textContent = 'Enviando...'; btn.style.opacity='.7'; }
-    setTimeout(() => {
-      form.style.display = 'none';
-      success.style.display = 'block';
-      // Integre aqui: Mailchimp, RD Station, ConvertKit, etc.
-      console.log('Newsletter signup:', name, email);
-    }, 800);
+// ═══ NEWSLETTER — SHARKNEWS INTEGRATION ═══
+const NL_API = 'https://sharknews-sub.com.br/api/subscribe';
+
+// Animated counter on scroll
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target, 10);
+  const duration = 1800;
+  const start = performance.now();
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target).toLocaleString('pt-BR');
+    if (progress < 1) requestAnimationFrame(tick);
+    else el.textContent = '+' + target.toLocaleString('pt-BR');
   }
+  requestAnimationFrame(tick);
+}
+const nlCounter = document.querySelector('.nl-counter');
+if (nlCounter) {
+  let counterFired = false;
+  new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !counterFired) {
+        counterFired = true;
+        animateCounter(entry.target);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 }).observe(nlCounter);
+}
+
+// Email validation
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Real-time email validation UI
+const nlEmailInput = document.getElementById('newsletterEmail');
+const nlEmailStatus = document.getElementById('nlEmailStatus');
+const nlEmailError = document.getElementById('nlEmailError');
+if (nlEmailInput) {
+  nlEmailInput.addEventListener('input', function() {
+    const val = this.value.trim();
+    if (!val) {
+      this.classList.remove('nl-valid', 'nl-invalid');
+      nlEmailStatus.classList.remove('nl-show');
+      nlEmailStatus.innerHTML = '';
+      nlEmailError.textContent = '';
+      return;
+    }
+    if (isValidEmail(val)) {
+      this.classList.remove('nl-invalid');
+      this.classList.add('nl-valid');
+      nlEmailStatus.classList.add('nl-show');
+      nlEmailStatus.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+      nlEmailError.textContent = '';
+    } else {
+      this.classList.remove('nl-valid');
+      this.classList.add('nl-invalid');
+      nlEmailStatus.classList.add('nl-show');
+      nlEmailStatus.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+    }
+  });
+  nlEmailInput.addEventListener('blur', function() {
+    const val = this.value.trim();
+    if (val && !isValidEmail(val)) {
+      nlEmailError.textContent = 'Insira um e-mail válido';
+    }
+  });
+}
+
+// Form submission
+const nlForm = document.getElementById('newsletterForm');
+if (nlForm) {
+  nlForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const nameEl = document.getElementById('nlName');
+    const emailEl = document.getElementById('newsletterEmail');
+    const consentEl = document.getElementById('nlConsent');
+    const btn = document.getElementById('nlSubmitBtn');
+    const consentError = document.getElementById('nlConsentError');
+    const formCard = document.getElementById('nlFormCard');
+    const successEl = document.getElementById('newsletterSuccess');
+    const errorEl = document.getElementById('newsletterError');
+    const errorMsg = document.getElementById('nlErrorMsg');
+
+    // Reset errors
+    if (consentError) consentError.textContent = '';
+    if (nlEmailError) nlEmailError.textContent = '';
+
+    // Validate email
+    const email = emailEl.value.trim();
+    if (!email || !isValidEmail(email)) {
+      emailEl.classList.add('nl-invalid');
+      if (nlEmailError) nlEmailError.textContent = 'Insira um e-mail válido';
+      emailEl.focus();
+      return;
+    }
+
+    // Validate consent
+    if (!consentEl.checked) {
+      if (consentError) consentError.textContent = 'Você precisa aceitar para se inscrever';
+      return;
+    }
+
+    // Loading state
+    btn.classList.add('nl-loading');
+    btn.disabled = true;
+
+    // Meta Pixel — Lead event
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'Lead', { content_name: 'SharkNews Newsletter' });
+    }
+
+    const payload = {
+      email: email,
+      name: nameEl ? nameEl.value.trim() || null : null,
+      consentAccepted: true,
+      consentVersion: '1.0',
+      consentSource: 'shkgroup-landing-page'
+    };
+
+    try {
+      const res = await fetch(NL_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        nlForm.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'none';
+        successEl.style.display = 'block';
+      } else {
+        const data = await res.json().catch(() => null);
+        let msg = 'Ocorreu um erro. Tente novamente.';
+        if (res.status === 409) {
+          msg = 'Este e-mail já está inscrito na SharkNews!';
+        } else if (res.status === 400 && data) {
+          msg = data.message || data.error || 'Verifique os dados e tente novamente.';
+        } else if (res.status >= 500) {
+          msg = 'Servidor temporariamente indisponível. Tente em alguns minutos.';
+        }
+        nlForm.style.display = 'none';
+        if (errorMsg) errorMsg.textContent = msg;
+        if (errorEl) errorEl.style.display = 'block';
+      }
+    } catch (err) {
+      nlForm.style.display = 'none';
+      if (errorMsg) errorMsg.textContent = 'Sem conexão. Verifique sua internet e tente novamente.';
+      if (errorEl) errorEl.style.display = 'block';
+    } finally {
+      btn.classList.remove('nl-loading');
+      btn.disabled = false;
+    }
+  });
+}
+
+// Retry button
+const nlRetryBtn = document.getElementById('nlRetryBtn');
+if (nlRetryBtn) {
+  nlRetryBtn.addEventListener('click', function() {
+    const errorEl = document.getElementById('newsletterError');
+    const form = document.getElementById('newsletterForm');
+    if (errorEl) errorEl.style.display = 'none';
+    if (form) form.style.display = 'block';
+  });
+}
+
+// ═══ NEWSLETTER — UNSUBSCRIBE ═══
+const nlUnsubToggle = document.getElementById('nlUnsubToggle');
+const nlUnsubForm = document.getElementById('nlUnsubForm');
+if (nlUnsubToggle && nlUnsubForm) {
+  nlUnsubToggle.addEventListener('click', function() {
+    nlUnsubForm.classList.toggle('nl-show');
+    this.textContent = nlUnsubForm.classList.contains('nl-show')
+      ? 'Fechar'
+      : 'Já é inscrito? Cancelar inscrição';
+  });
+}
+
+const nlUnsubBtn = document.getElementById('nlUnsubBtn');
+if (nlUnsubBtn) {
+  nlUnsubBtn.addEventListener('click', async function() {
+    const emailEl = document.getElementById('nlUnsubEmail');
+    const msgEl = document.getElementById('nlUnsubMsg');
+    const email = emailEl.value.trim();
+
+    msgEl.textContent = '';
+    msgEl.className = 'nl-unsub-msg';
+
+    if (!email || !isValidEmail(email)) {
+      msgEl.textContent = 'Insira um e-mail válido';
+      msgEl.classList.add('nl-msg-error');
+      emailEl.focus();
+      return;
+    }
+
+    nlUnsubBtn.classList.add('nl-loading');
+    nlUnsubBtn.disabled = true;
+
+    try {
+      const res = await fetch(NL_API + '/' + encodeURIComponent(email), {
+        method: 'DELETE'
+      });
+
+      if (res.ok) {
+        msgEl.textContent = 'Inscrição cancelada com sucesso. Sentiremos sua falta!';
+        msgEl.classList.add('nl-msg-success');
+        emailEl.value = '';
+      } else if (res.status === 404) {
+        msgEl.textContent = 'Este e-mail não está inscrito na SharkNews.';
+        msgEl.classList.add('nl-msg-error');
+      } else {
+        msgEl.textContent = 'Erro ao cancelar. Tente novamente.';
+        msgEl.classList.add('nl-msg-error');
+      }
+    } catch (err) {
+      msgEl.textContent = 'Sem conexão. Verifique sua internet e tente novamente.';
+      msgEl.classList.add('nl-msg-error');
+    } finally {
+      nlUnsubBtn.classList.remove('nl-loading');
+      nlUnsubBtn.disabled = false;
+    }
+  });
 }
 
 // ═══ 3D TILT NOS PRICING CARDS ═══
@@ -220,24 +429,7 @@ if (ofertaSection) {
   }, { threshold: 0.3 }).observe(ofertaSection);
 }
 
-// Lead — quando submete newsletter
-// (já integrado na função submitNewsletter, adicionando trackEvent abaixo)
-const origSubmit = window.submitNewsletter;
-window.submitNewsletter = function(e) {
-  trackEvent('Lead', { content_name: 'Newsletter SHKGROUP.IA' });
-  if (origSubmit) origSubmit(e); else {
-    e.preventDefault();
-    const name = document.getElementById('nlName')?.value || '';
-    const email = document.getElementById('newsletterEmail')?.value || '';
-    const form = document.getElementById('newsletterForm');
-    const success = document.getElementById('newsletterSuccess');
-    if (form && success) {
-      const btn = form.querySelector('.nl-submit-btn');
-      if(btn){ btn.textContent = 'Enviando...'; btn.style.opacity='.7'; }
-      setTimeout(() => { form.style.display='none'; success.style.display='block'; }, 800);
-    }
-  }
-};
+// Lead — tracking agora integrado diretamente no form handler acima
 
 // Contact — clique em qualquer botão WhatsApp
 document.querySelectorAll('a[href*="wa.me"]').forEach(btn => {
