@@ -721,40 +721,8 @@ body{animation:pageLoad .5s ease}
 .video-play-pulse{position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(139,92,246,.3);animation:waPulse 2.5s ease-out infinite}
 .video-placeholder p{font-size:1rem;font-weight:600;color:var(--text2);z-index:1}
 
-/* ════════════════ NEWSLETTER ════════════════ */
-.newsletter-section{padding:100px 0;background:var(--bg2);position:relative;overflow:hidden}
-.newsletter-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,.07),transparent 60%);pointer-events:none}
-.newsletter-card{max-width:640px;margin:0 auto;text-align:center;position:relative;z-index:1}
-.newsletter-icon{width:72px;height:72px;background:linear-gradient(145deg,rgba(139,92,246,.2),rgba(109,40,217,.08));border:1px solid rgba(139,92,246,.25);border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;color:var(--accent-l);margin:0 auto 28px;box-shadow:0 8px 32px rgba(139,92,246,.2),inset 0 1px 2px rgba(255,255,255,.08);animation:orbFloat 6s ease-in-out infinite}
-.newsletter-title{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;letter-spacing:-.03em;margin-bottom:14px;line-height:1.2}
-.newsletter-sub{font-size:1rem;color:var(--text2);margin-bottom:36px;line-height:1.7}
-.newsletter-form{display:flex;gap:12px;max-width:500px;margin:0 auto 16px}
-.newsletter-input{flex:1;padding:15px 22px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:50px;color:var(--text);font-family:var(--font);font-size:.9rem;outline:none;transition:var(--tr)}
-.newsletter-input::placeholder{color:var(--muted)}
-.newsletter-input:focus{border-color:var(--accent);background:rgba(139,92,246,.06);box-shadow:0 0 0 3px rgba(139,92,246,.1)}
-.newsletter-btn{padding:15px 28px;background:var(--grad2);color:#fff;border:none;border-radius:50px;font-weight:600;font-size:.9rem;cursor:pointer;transition:var(--tr);white-space:nowrap;font-family:var(--font)}
-.newsletter-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(109,40,217,.4)}
-.newsletter-success{display:none;padding:14px 24px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:50px;color:#34d399;font-size:.9rem;font-weight:600;margin-bottom:12px}
-.newsletter-privacy{font-size:.75rem;color:var(--muted)}
-.newsletter-privacy a{color:var(--accent-l)}
+/* ════════════════ NEWSLETTER — see V2 below ════════════════ */
 
-/* ════════════════ RESPONSIVE ════════════════ */
-@media(max-width:1024px){
-  .pricing-grid{grid-template-columns:1fr 1fr}
-  .pricing-card--obsidian{grid-column:1/-1;max-width:480px;margin:0 auto;width:100%}
-}
-@media(max-width:768px){
-  .pricing-grid{grid-template-columns:1fr}
-  .pricing-card--obsidian{grid-column:auto;max-width:100%}
-  .newsletter-form{flex-direction:column}
-  .newsletter-btn{width:100%}
-  .svc-card-grid{grid-template-columns:1fr 1fr}
-  .pricing-plan-name{font-size:2.6rem}
-}
-@media(max-width:480px){
-  .svc-card-grid{grid-template-columns:1fr}
-  .pricing-plan-name{font-size:2.2rem}
-}
 
 
 /* ════════════════ HERO ENHANCEMENTS ════════════════ */
@@ -935,15 +903,6 @@ body{animation:pageLoad .5s ease}
 .nl-float--1{bottom:-16px;left:-20px;animation:heroFloat2 5s ease-in-out infinite}
 .nl-float--2{top:-16px;right:-10px;animation:heroFloat1 6s ease-in-out infinite}
 
-/* Responsive */
-@media(max-width:1024px){.newsletter-wrapper{grid-template-columns:1fr;gap:48px}}
-@media(max-width:768px){
-  .nl-form-card{padding:24px 20px}
-  .nl-float--1,.nl-float--2{position:relative;top:auto;right:auto;bottom:auto;left:auto;display:inline-flex;margin-top:12px;margin-right:8px}
-  .nl-right::after{content:'';display:table;clear:both}
-  .nl-edition-preview{padding:16px 18px}
-  .hero-social-proof{display:none}
-}
 
 
 /* ════════════════ EXIT INTENT POPUP ════════════════ */
@@ -1108,7 +1067,7 @@ body{animation:pageLoad .5s ease}
 /* ── PRICING CARDS mobile ── */
 @media(max-width:1024px){
   .pricing-grid{grid-template-columns:1fr 1fr}
-  .pricing-card--obsidian{grid-column:1/-1}
+  .pricing-card--obsidian{grid-column:1/-1;max-width:480px;margin:0 auto;width:100%}
 }
 @media(max-width:768px){
   .pricing-grid{grid-template-columns:1fr;gap:20px;max-width:440px;margin:0 auto}
@@ -1137,6 +1096,9 @@ body{animation:pageLoad .5s ease}
   .nl-float{display:none}
   .nl-form-card{padding:24px 20px;border-radius:18px}
   .nl-social-count{flex-wrap:wrap}
+  .nl-edition-preview{padding:16px 18px}
+  .nl-right::after{content:'';display:table;clear:both}
+  .hero-social-proof{display:none}
 }
 
 /* ── Serviços / tabs mobile ── */
