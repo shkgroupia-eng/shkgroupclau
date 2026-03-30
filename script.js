@@ -328,9 +328,15 @@ if (nlRetryBtn) {
 const nlUnsubToggle = document.getElementById('nlUnsubToggle');
 const nlUnsubForm = document.getElementById('nlUnsubForm');
 if (nlUnsubToggle && nlUnsubForm) {
+  nlUnsubToggle.setAttribute('aria-expanded', 'false');
+  nlUnsubForm.setAttribute('aria-hidden', 'true');
+
   nlUnsubToggle.addEventListener('click', function() {
-    nlUnsubForm.classList.toggle('nl-show');
-    this.textContent = nlUnsubForm.classList.contains('nl-show')
+    const isOpen = nlUnsubForm.classList.toggle('nl-show');
+    nlUnsubForm.style.display = isOpen ? 'block' : 'none';
+    nlUnsubToggle.setAttribute('aria-expanded', String(isOpen));
+    nlUnsubForm.setAttribute('aria-hidden', String(!isOpen));
+    this.textContent = isOpen
       ? 'Fechar'
       : 'Já é inscrito? Cancelar inscrição';
   });
