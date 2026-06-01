@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (window.innerWidth > 768 && dot && ring) {
         document.addEventListener('mousemove', e => {
-            mx = e.clientX; my = e.clientY;
+            mx = e.clientX;
+            my = e.clientY;
             dot.style.left = (mx - 3) + 'px';
             dot.style.top = (my - 3) + 'px';
         });
@@ -58,12 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinks.classList.toggle('open');
         });
 
-        navLinks.querySelectorAll('a').forEach(a =>
-            a.addEventListener('click', () => {
-                navToggle.classList.remove('open');
-                navLinks.classList.remove('open');
-            })
-        );
+        navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+            navToggle.classList.remove('open');
+            navLinks.classList.remove('open');
+        }));
     }
 
     const revealObs = new IntersectionObserver(entries => {
@@ -132,15 +131,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    function generateEventId(prefix = 'shk') {
+        return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    }
+
     function trackEvent(event, params, eventID) {
         if (typeof fbq !== 'undefined') {
             if (eventID) fbq('track', event, params || {}, { eventID });
             else fbq('track', event, params || {});
         }
-    }
-
-    function generateEventId(prefix = 'shk') {
-        return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
     }
 
     const ofertaSection = document.getElementById('oferta');
@@ -251,7 +250,7 @@ if (nlEmailInput) {
             this.classList.add('nl-invalid');
             if (nlEmailStatus) {
                 nlEmailStatus.classList.add('nl-show');
-                nlEmailStatus.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">ircle cx="12" cy="12" r="10"/>e x1="15" y1="9" x2="9" y2="15"/>e x1="9" y1="9" x2="15" y2="15"/></svg>';
+                nlEmailStatus.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
             }
         }
     });
@@ -295,6 +294,7 @@ if (nlForm) {
         }
 
         const eventId = generateEventId('newsletter');
+
         btn.classList.add('nl-loading');
         btn.disabled = true;
 
