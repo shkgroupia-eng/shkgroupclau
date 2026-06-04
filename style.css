@@ -1170,3 +1170,16 @@ body{animation:pageLoad .5s ease}
   .section-title{font-size:1.55rem}
   .proof-row-secondary{grid-template-columns:1fr}
 }
+.hero-anim,
+.reveal {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    clip-path: none !important;
+}
+
+.hero-anim.visible,
+.reveal.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
