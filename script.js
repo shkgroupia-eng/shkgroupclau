@@ -785,7 +785,7 @@ function initTracking() {
     }, { passive: true });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function initSHKSite() {
     initCustomCursor();
     initHeroAnimations();
     initNavbar();
@@ -799,4 +799,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initConsentBanner();
     initExitIntent();
     initTracking();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSHKSite);
+} else {
+    initSHKSite();
+}
