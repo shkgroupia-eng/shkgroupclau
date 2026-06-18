@@ -557,7 +557,7 @@ function initNewsletter() {
                     name,
                     first_name: name,
                     email,
-                    consent: true,
+                    consentAccepted: true,
                     source: 'site_shkgroup',
                     page_url: window.location.href,
                     page_title: document.title
