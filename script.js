@@ -4,6 +4,7 @@ const CONFIG = (() => {
         newsletterSubscribeUrl: cfg.newsletterSubscribeUrl || 'https://sharknews-sub.com.br/api/subscribe',
         newsletterUnsubscribeUrl: cfg.newsletterUnsubscribeUrl || 'https://sharknews-sub.com.br/api/unsubscribe',
         capiWebhookUrl: cfg.capiWebhookUrl || '/webhook/capi-lead',
+        newsletterApiKey: cfg.newsletterApiKey || '',
         consentKey: 'shk_cookie_consent_v1',
         exitShownKey: 'shk_exit_shown'
     };
@@ -546,11 +547,12 @@ function initNewsletter() {
         hideEl(errorBox);
 
         try {
+            const subscribeHeaders = { 'Content-Type': 'application/json' };
+            if (CONFIG.newsletterApiKey) subscribeHeaders['X-Admin-Token'] = CONFIG.newsletterApiKey;
+
             const res = await fetch(CONFIG.newsletterSubscribeUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: subscribeHeaders,
                 body: JSON.stringify({
                     name,
                     first_name: name,
@@ -622,11 +624,12 @@ function initNewsletter() {
         setLoadingState(unsubBtn, true, unsubBtnText, unsubBtnSpinner);
 
         try {
+            const unsubscribeHeaders = { 'Content-Type': 'application/json' };
+            if (CONFIG.newsletterApiKey) unsubscribeHeaders['X-Admin-Token'] = CONFIG.newsletterApiKey;
+
             const res = await fetch(CONFIG.newsletterUnsubscribeUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: unsubscribeHeaders,
                 body: JSON.stringify({ email })
             });
 
