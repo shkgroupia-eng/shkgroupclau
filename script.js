@@ -2,7 +2,9 @@ const CONFIG = (() => {
     const cfg = window.SHK_CONFIG || {};
     return {
         newsletterSubscribeUrl: cfg.newsletterSubscribeUrl || 'https://sharknews-sub.com.br/api/subscribe',
-        newsletterUnsubscribeUrl: cfg.newsletterUnsubscribeUrl || 'https://sharknews-sub.com.br/api/unsubscribe',
+        // Unsubscribe = DELETE /api/subscribe/{email} (endpoint publico que o backend ja expoe).
+        // Deriva da base de subscribe; resiliente a SHK_CONFIG legado que ainda aponte /api/unsubscribe.
+        newsletterUnsubscribeBase: cfg.newsletterUnsubscribeBase || cfg.newsletterSubscribeUrl || 'https://sharknews-sub.com.br/api/subscribe',
         capiWebhookUrl: cfg.capiWebhookUrl || '/webhook/capi-lead',
         newsletterApiKey: cfg.newsletterApiKey || '',
         consentKey: 'shk_cookie_consent_v1',
@@ -564,13 +566,19 @@ function initNewsletter() {
                 })
             });
 
-            let data = null;
-            try {
-                data = await res.json();
-            } catch (_) {}
+            // O backend responde text/plain (sucesso e erros como 409 duplicado).
+            const text = (await res.text().catch(() => '')).trim();
 
             if (!res.ok) {
-                throw new Error(data?.message || 'Não foi possível concluir sua inscrição agora.');
+                let message = text;
+                // Erros de validacao (400) podem vir como JSON { campo: msg }.
+                if (message && message.startsWith('{')) {
+                    try {
+                        const parsed = JSON.parse(message);
+                        message = Object.values(parsed)[0] || message;
+                    } catch (_) {}
+                }
+                throw new Error(message || 'Não foi possível concluir sua inscrição agora.');
             }
 
             hideEl(form);
@@ -601,7 +609,8 @@ function initNewsletter() {
     });
 
     unsubToggle?.addEventListener('click', () => {
-        const isVisible = unsubForm?.style.display === 'block';
+        if (!unsubForm) return;
+        const isVisible = unsubForm.style.display === 'block';
         unsubForm.style.display = isVisible ? 'none' : 'block';
         unsubToggle.classList.toggle('open', !isVisible);
     });
@@ -624,26 +633,20 @@ function initNewsletter() {
         setLoadingState(unsubBtn, true, unsubBtnText, unsubBtnSpinner);
 
         try {
-            const unsubscribeHeaders = { 'Content-Type': 'application/json' };
-            if (CONFIG.newsletterApiKey) unsubscribeHeaders['X-Admin-Token'] = CONFIG.newsletterApiKey;
-
-            const res = await fetch(CONFIG.newsletterUnsubscribeUrl, {
-                method: 'POST',
-                headers: unsubscribeHeaders,
-                body: JSON.stringify({ email })
+            // Backend de prod: descadastro por e-mail = DELETE /api/subscribe/{email} (publico).
+            const res = await fetch(`${CONFIG.newsletterUnsubscribeBase}/${encodeURIComponent(email)}`, {
+                method: 'DELETE'
             });
 
-            let data = null;
-            try {
-                data = await res.json();
-            } catch (_) {}
+            // Resposta e text/plain (mensagem neutra anti-enumeracao).
+            const text = (await res.text().catch(() => '')).trim();
 
             if (!res.ok) {
-                throw new Error(data?.message || 'Não foi possível cancelar agora.');
+                throw new Error(text || 'Não foi possível cancelar agora.');
             }
 
             if (unsubMsg) {
-                unsubMsg.textContent = data?.message || 'Inscrição cancelada com sucesso.';
+                unsubMsg.textContent = text || 'Inscrição cancelada com sucesso.';
                 unsubMsg.classList.remove('error');
             }
         } catch (err) {
